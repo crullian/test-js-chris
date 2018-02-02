@@ -50,7 +50,7 @@ export function getDoorstepsSongs () {
 
       // Set final results array by sorting our results data using our custom 
       // compare function which sorts first by year, then by title.
-      const combinedResults = jsonResultSet ? jsonResultSet.sort(compareFunction) : [];
+      const combinedResults = jsonResultSet.sort(compareFunction);
 
       return dispatch({
         type: 'GET_DOORSTEPS_SONGS_SUCCESS',
