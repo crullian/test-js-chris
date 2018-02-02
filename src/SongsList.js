@@ -23,6 +23,7 @@ export function SongsList(props) {
       <tbody>
         {
           songs.map((song, index) => {
+            const trackTime  = moment(song.trackTimeMillis).format('mm:ss');
             return (
               <tr key={index}>
                 <td><img src={song.artworkUrl100} alt='track artwork' /></td>
@@ -30,7 +31,7 @@ export function SongsList(props) {
                 <td>{`Album: ${song.collectionName}`}</td>
                 <td>{song.trackName}</td>
                 <td>{song.releaseYear}</td>
-                <td>{`Runtime: ${song.trackTimeMillis}`}</td>
+                <td>{`Runtime: ${trackTime}`}</td>
                 <td>{`$${song.trackPrice}`}</td>
               </tr>
             )
