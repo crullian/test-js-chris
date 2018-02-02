@@ -1,4 +1,5 @@
 import fetch from 'fetch-jsonp'
+import moment from 'moment'
 
 export function getDoorstepsSongs () {
   return dispatch => {
@@ -6,6 +7,22 @@ export function getDoorstepsSongs () {
     const stepsSongs = 'https://itunes.apple.com/search?country=us&media=music&limit=100&attribute=songTerm&term=steps&sort=ratingIndex'
     const req1 = fetch(doorSongs)
     const req2 = fetch(stepsSongs)
+    const compareFunction = (a, b) => {
+      let a_trackName = a.trackName.replace('The ', '')
+      let b_trackName = b.trackName.replace('The ', '')
+      if (a.releaseYear < b.releaseYear) {
+        return -1;
+      } else if (a.releaseYear > b.releaseYear) {
+        return 1;
+      }
+      if (a_trackName < b_trackName) {
+        return -1;
+      } else if (a_trackName > b_trackName) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
 
     return Promise.all([req1, req2])
     .then(responses => responses.map(res => res.json()))
@@ -23,13 +40,24 @@ export function getDoorstepsSongs () {
       //    this is used in src/SongsList.js line 32
       //
 
-      const combinedResults = []
+      // Concatenate results into one arry of data.
+      const jsonResultSet = jsonResponses[0].results.concat(jsonResponses[1].results)
+
+      // Assign 'year' property on each entry based on releaseDate property.
+      jsonResultSet.forEach(entry => {
+        return entry['releaseYear'] = moment(entry['releaseDate']).format('YYYY')
+      });
+
+      // Set final results array by sorting our results data using our custom 
+      // compare function which sorts first by year, then by title.
+      const combinedResults = jsonResultSet ? jsonResultSet.sort(compareFunction) : [];
 
       return dispatch({
         type: 'GET_DOORSTEPS_SONGS_SUCCESS',
         songs: combinedResults
       })
     })
+    .catch(err => console.error('Error in response :_(', err))
   }
 }
 
