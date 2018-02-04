@@ -12,7 +12,7 @@ svg.spinner {
 }
 svg.spinner circle {
   fill: transparent;
-  stroke: #212121;
+  stroke: #d80e00;
   stroke-width: 4;
   stroke-linecap: round;
   stroke-dasharray: 125.6;
