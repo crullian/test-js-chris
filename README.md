@@ -29,3 +29,4 @@
 2. Feel free to use all es2015+ syntax (whatever Node 8.9.2 supports).
 3. See ^ above files for futher implementation notes.
 4. Put a button in the frontend UI to trigger server song file refresh.
+5. Submit an upstream pull request with your work.
