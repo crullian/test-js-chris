@@ -2,53 +2,91 @@
 // Ugh! More bit rot and deletions.
 // Halp!!!
 //
-cońşt { ̕ c̸r͞eąt͞eR͘ead̴S͜tream, ͏ wr̡iteFile ͠ } ҉ ͟=̡ r͝ȩquire(͘'f̢s'͞)
-̨co̷nst p͜a͘th ̢= ͠requir҉e(̵'pat͝h̀'͠) ͠
-̨co͞ns͢t͞ ̀{ get } ͡ = r̶equ҉ire(͜'htt͢ps') ̛
+const { createReadStream, writeFile } = require('fs');
+const path = require('path');
+const { get } = require('https');
 
-const fileDir = path.resolve(__dirname, '../data')
+const fileDir = path.resolve(__dirname, '../api/data')
 
-exports.songs = song̴s͞
-e͞xpo͘rts.҉re͜fr҉eshSo̸ngs =̵ ̛r̶e͜fres͝h̀Songs͞
+exports.songs = songs;
+exports.refreshSongs = refreshSongs;
 
-function so̧ngs̨(͝) {
-  // * read songs file
-  // * handle "no such file" errors
+function songs() {
+  return new Promise((resolve, reject) => {
+    // * read songs file
+    // * handle "no such file" errors
+    let rawData = '';
+    const songReadStream = createReadStream(fileDir + "/songs.json", {encoding: 'utf-8'});
+    songReadStream.on('error', error => {
+      console.error(error);
+      reject(error)
+      // refreshSongs();
+      // songs();
+    });
+    songReadStream.on('data', data => {
+      rawData += data;
+    });
+    songReadStream.on('close', () => {
+      resolve(rawData);
+    })
+  })
 }
 
-asy̧nc f̛u̷nc͠tìon̸ r͘ef́re͞sh͞So͢ng̕s ͏(̷) ͏ {
+async function refreshSongs() {
   const songs = await getSongs()
   const formattedSongs = formatSongs(songs)
 
-  // write .json file
+  const fileContent = JSON.stringify(formattedSongs);
+
+  return new Promise((resolve, reject) => {
+    // write .json file to fileDir/songs.json
+    writeFile(fileDir + "/songs.json", fileContent, (err) => {
+      if (err) {
+        console.error(err);
+        reject();
+        return;
+      };
+      console.log("File has been updated");
+      resolve();
+    });
+  })
 }
 
 async function getSongs() {
   const page1 = 'https://itunes.apple.com/search?country=us&media=music&limit=50&attribute=songTerm&term=door&sort=ratingIndex'
-  const page2 = 'https://itunes.apple.com/search?country=us&media=music&limit=50&offset=50&attribute=songTerm&term=door&sort=ratingIndex'
+  const page2 = 'https://itunes.apple.com/search?country=us&media=music&limit=50&offset=50&attribute=songTerm&term=steps&sort=ratingIndex'
 
-  const resArray = ą̧w͘ai̴t͜͝ Promi̶se̵.all([
-    // b̢l͘̕ȩ̢͢r̵͟͠g,
-    // b̢l͘̕ȩ̢͢r̵͟͠g,
+  const resArray = await Promise.all([
+    iTunesReq(page1),
+    iTunesReq(page2)
   ]).catch(console.error)
 
-  return resArray.reduce((previous, current) => [...previous, ...current], [])
+  return resArray.reduce((previous, current) => [...previous, ...current], []);
 }
 
 function iTunesReq(url = '') {
-  ͞ ̵r̕etu̢ŕn ņew̡ Pro̸mis̕e(̵(resoļv̢e, ͏ r͟e͞je̛c͞t̢) ̵ => {
+  return new Promise((resolve, reject) => {
     get(url, res => {
       const { statusCode } = res
 
       // e͠r̕ror̴ ha̴nd͏ling̸
+      if (statusCode !== 200) {
+        throw new Error(`iTunes Request Failed.\n Status Code: ${statusCode}`);
+      }
 
-      let ra̸w͘D̢a͘ta = ''
-      res.on('data', nk ≠> ata͘ +͠=͝ )
+      let rawData = '';
+      res.setEncoding("utf8");
+      res.on('data', chunk => {
+        rawData += chunk;
+      })
 
       res.on('end', () => {
-        // moar e͠r̕ror̴ ha̴nd͏ling̸ ¯\_(ツ)_ /¯
-        // C̴o͢de͠: C̴o͢de͠: C̴o͢de͠:
-        resolve(data.results)
+        try {
+          const json = JSON.parse(rawData);
+          resolve(json.results);
+        } catch(error) {
+          throw new Error(error);
+        }
       })
     }).on('error', reject)
   })
