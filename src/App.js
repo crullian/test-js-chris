@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import SongsList from './SongsList'
 import Loader from './Loader'
+import GetSongsBtn from './GetSongsBtn'
 import { getDoorstepsSongs } from './state/actions'
 
 class App extends Component {
@@ -37,6 +38,8 @@ class App extends Component {
         <header className='App__header'>
           <h1 className='App__header-welcome'>Welcome to Doorsteps Songs!</h1>
         </header>
+
+        <GetSongsBtn />
         
         { content }
 
