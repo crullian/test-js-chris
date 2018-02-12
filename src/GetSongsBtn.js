@@ -1,16 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { getDoorstepsSongs } from './state/actions'
+import { refreshSongs } from './state/actions'
+
+import './GetSongsBtn.css'
 
 class GetSongsBtn extends Component {
-  _requestSongs = () => {
-    this.props.dispatch(getDoorstepsSongs())
+  _refreshSongs = () => {
+    this.props.dispatch(refreshSongs())
   }
 
   render () {
     return (
-      <button onClick={this._requestSongs}>
-        Get Doorsteps Songs
+      <button className='GetSongsBtn' onClick={this._refreshSongs}>
+        Refresh Songs
       </button>
     )
   }
