@@ -72,12 +72,12 @@ p, h3 {
 }
 
 .SongsList__song-item-img {
-  width: 160px;
-  height: 160px;
+  width: 130px;
+  height: 130px;
 }
 
 .SongsList__song-item-info {
-  margin: 8px 20px 20px 10px;
+  margin: 8px;
   width: 240px;
 }
 
